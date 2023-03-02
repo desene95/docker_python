@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment # Set up the deployement kind
+metadata:
+  name: python-app-deployment # Name for the deployement
+  labels:
+    app: python-app
+spec:
+  replicas: 1 # Number of clones that we want
+  selector:
+    matchLabels:
+      app: python-app
+  template:
+    metadata:
+      labels:
+        app: python-app
+    spec:
+      containers:
+        - name: python-app
+          image: dameeseneregistry2.azurecr.io/python-app # Container name that we pushed to ACR
+          ports:
+            - containerPort: 5000 # Container port number
+--- # We can seperate file in YAML using --- dashes instead of writing them on seperate files
+apiVersion: v1
+kind: Service # Set up the service kind
+metadata:
+  name: python-app-loadbalancer-service
+  labels:
+    app: python-app
+spec:
+  type: LoadBalancer # Here we use load balancer service.
+  selector:
+    app: python-app
+  ports:
+    - port: 5000
+      targetPort: 5000
